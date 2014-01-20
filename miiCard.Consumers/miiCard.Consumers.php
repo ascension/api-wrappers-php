@@ -19,9 +19,9 @@ define("MIICARD_VERIFY_SSL_DETAILS", TRUE);
 
 // Include OAuth library only if it hasn't already been defined (as for some
 // packages like Drupal this'll be a modular dependency)
-if (!class_exists('OAuthRequest')) {
-  require_once 'oauth/OAuth.php';
-}
+
+require_once 'oauth/OAuth.php';
+
 require_once 'miiCard.Model.php';
 
 /**
@@ -286,7 +286,7 @@ abstract class OAuthSignedRequestMaker {
       CURLOPT_TIMEOUT => 90,
       CURLOPT_FOLLOWLOCATION => TRUE,
       CURLOPT_RETURNTRANSFER => TRUE,
-      CURLOPT_SSL_VERIFYHOST => MIICARD_VERIFY_SSL_DETAILS,
+      CURLOPT_SSL_VERIFYHOST => FALSE,
       CURLOPT_SSL_VERIFYPEER => MIICARD_VERIFY_SSL_DETAILS ? 2 : 0,
       CURLOPT_CAINFO => dirname(__FILE__) . "/certs/sts.miicard.com.pem",
       CURLOPT_HTTPHEADER => $headers,
@@ -922,7 +922,7 @@ class MiiCard extends OAuthSignedRequestMaker {
    * @param string $callback_url
    *   Set a customer callback url.
    */
-  public function __construct($consumer_key, $consumer_secret, $access_token = NULL, $access_token_secret = NULL, $referrer_code = NULL, $force_claims_picker = FALSE, $callback_url = NULL,$signup_mode = FALSE,) {
+  public function __construct($consumer_key, $consumer_secret, $access_token = NULL, $access_token_secret = NULL, $referrer_code = NULL, $force_claims_picker = FALSE, $callback_url = NULL,$signup_mode = FALSE) {
     parent::__construct($consumer_key, $consumer_secret, $access_token, $access_token_secret);
 
     $this->callbackUrl = $this->getDefaultCallbackUrl($callback_url);
@@ -1015,10 +1015,12 @@ class MiiCard extends OAuthSignedRequestMaker {
     // Doing a header here means we never set the session cookie, which is bad
     // if we're the first thing that ever tries as we'll forget the request
     // token secret. Instead, do a quick bounce through a meta refresh.
-    ?>
+    /*
         <html><head><meta http-equiv="refresh" content="0;url=<?php echo $redirect_url ?>"></head><title>Redirecting to miiCard.com</title>
         <body>You should be redirected automatically - if not, <a href="<?php echo $redirect_url ?>">click here</a>.</body></html>
-    <?php
+    */
+    
+    require'template.php'; 
 
     exit(0);
   }
